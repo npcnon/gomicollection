@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1" author="gomicollection">
+        <createTable tableName="DEVICE">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_DEVICE"/>
+            </column>
+            <column name="ACTIVE" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEVICE_NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="gomicollection">
+        <addColumn tableName="EMPLOYEE">
+            <column name="DEVICE_ID" type="UUID"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="3" author="gomicollection">
+        <createIndex indexName="IDX_EMPLOYEE_DEVICE" tableName="EMPLOYEE">
+            <column name="DEVICE_ID"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="DEVICE_ID" baseTableName="EMPLOYEE"
+                                 constraintName="FK_EMPLOYEE_ON_DEVICE" referencedColumnNames="ID"
+                                 referencedTableName="DEVICE"/>
+    </changeSet>
+</databaseChangeLog>

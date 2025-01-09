@@ -2,16 +2,15 @@ package com.company.gomicollection.entity;
 
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.metamodel.annotation.JmixEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
 @JmixEntity
-@Table(name = "EMPLOYEE")
+@Table(name = "EMPLOYEE", indexes = {
+        @Index(name = "IDX_EMPLOYEE_DEVICE", columnList = "DEVICE_ID")
+})
 @Entity
 public class Employee {
     @JmixGeneratedValue
@@ -38,6 +37,17 @@ public class Employee {
     @Column(name = "EMAIL", nullable = false)
     @NotNull
     private String email;
+    @JoinColumn(name = "DEVICE_ID")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Device device;
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
+    }
 
     public String getEmail() {
         return email;
