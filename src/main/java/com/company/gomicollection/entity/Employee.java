@@ -5,12 +5,11 @@ import io.jmix.core.metamodel.annotation.JmixEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
 import java.util.UUID;
 
 @JmixEntity
-@Table(name = "EMPLOYEE", indexes = {
-        @Index(name = "IDX_EMPLOYEE_DEVICE", columnList = "DEVICE_ID")
-})
+@Table(name = "EMPLOYEE")
 @Entity
 public class Employee {
     @JmixGeneratedValue
@@ -37,16 +36,28 @@ public class Employee {
     @Column(name = "EMAIL", nullable = false)
     @NotNull
     private String email;
-    @JoinColumn(name = "DEVICE_ID")
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Device device;
+    @JoinTable(name = "DEVICE_EMPLOYEE_LINK",
+            joinColumns = @JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "DEVICE_ID", referencedColumnName = "ID"))
+    @ManyToMany
+    private List<Device> devices;
+    @Column(name = "ACTIVE", columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean active;
 
-    public Device getDevice() {
-        return device;
+    public Boolean getActive() {
+        return active;
     }
 
-    public void setDevice(Device device) {
-        this.device = device;
+    public void setActive(Boolean status) {
+        this.active = status;
+    }
+
+    public List<Device> getDevices() {
+        return devices;
+    }
+
+    public void setDevices(List<Device> devices) {
+        this.devices = devices;
     }
 
     public String getEmail() {

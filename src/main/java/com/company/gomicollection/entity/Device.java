@@ -16,10 +16,12 @@ public class Device {
     @Column(name = "ID", nullable = false)
     @Id
     private UUID id;
-    @OneToMany(mappedBy = "device")
-    private List<Employee> employee_id;
-    @Column(name = "ACTIVE", nullable = false)
-    @NotNull
+    @JoinTable(name = "DEVICE_EMPLOYEE_LINK",
+            joinColumns = @JoinColumn(name = "DEVICE_ID", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "EMPLOYEE_ID", referencedColumnName = "ID"))
+    @ManyToMany
+    private List<Employee> employee;
+    @Column(name = "ACTIVE", columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean active = false;
     @Column(name = "VEHICLE_PLATE_NUMBER", nullable = false)
     @NotNull
@@ -27,6 +29,14 @@ public class Device {
     @Column(name = "DEVICE_NAME", nullable = false)
     @NotNull
     private String device_name;
+
+    public void setEmployee(List<Employee> employee) {
+        this.employee = employee;
+    }
+
+    public List<Employee> getEmployee() {
+        return employee;
+    }
 
     public String getVehicle_plate_number() {
         return vehicle_plate_number;
@@ -50,14 +60,6 @@ public class Device {
 
     public void setDevice_name(String device_name) {
         this.device_name = device_name;
-    }
-
-    public List<Employee> getEmployee_id() {
-        return employee_id;
-    }
-
-    public void setEmployee_id(List<Employee> employee_id) {
-        this.employee_id = employee_id;
     }
 
     public UUID getId() {

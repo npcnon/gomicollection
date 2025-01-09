@@ -6,13 +6,9 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
     <changeSet id="1" author="gomicollection">
-        <dropColumn columnName="ID" tableName="EMPLOYEE"/>
+        <addDefaultValue columnDataType="boolean" columnName="ACTIVE" defaultValueBoolean="true" tableName="DEVICE"/>
     </changeSet>
     <changeSet id="2" author="gomicollection">
-        <addColumn tableName="EMPLOYEE">
-            <column name="ID" type="UUID">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_EMPLOYEE" validateNullable="true"/>
-            </column>
-        </addColumn>
+        <addDefaultValue columnDataType="boolean" columnName="ACTIVE" defaultValueBoolean="true" tableName="EMPLOYEE"/>
     </changeSet>
 </databaseChangeLog>

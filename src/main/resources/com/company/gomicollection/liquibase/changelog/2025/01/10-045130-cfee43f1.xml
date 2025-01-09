@@ -6,10 +6,6 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
     <changeSet id="1" author="gomicollection">
-        <addColumn tableName="DEVICE">
-            <column name="VEHICLE_PLATE_NUMBER" type="VARCHAR(255)"/>
-        </addColumn>
-
-        <addNotNullConstraint columnName="VEHICLE_PLATE_NUMBER" defaultNullValue="''" tableName="DEVICE"/>
+        <dropNotNullConstraint columnDataType="timestamp" columnName="DATE_AND_TIME" tableName="DEVICE_LOCATION_LOGS"/>
     </changeSet>
 </databaseChangeLog>

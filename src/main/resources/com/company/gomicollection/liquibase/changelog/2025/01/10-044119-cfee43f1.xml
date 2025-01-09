@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1" author="gomicollection">
+        <createTable tableName="DEVICE">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_DEVICE"/>
+            </column>
+            <column name="ACTIVE" type="BOOLEAN"/>
+            <column name="VEHICLE_PLATE_NUMBER" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DEVICE_NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="2" author="gomicollection">
+        <createTable tableName="DEVICE_EMPLOYEE_LINK">
+            <column name="DEVICE_ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_DEVICE_EMPLOYEE_LINK"/>
+            </column>
+            <column name="EMPLOYEE_ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_DEVICE_EMPLOYEE_LINK"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="3" author="gomicollection">
+        <createTable tableName="DEVICE_LOCATION_LOGS">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_DEVICE_LOCATION_LOGS"/>
+            </column>
+            <column name="DEVICE_ID" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LATITUDE" type="DECIMAL(8, 6)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="LONGHITUDE" type="DECIMAL(9, 6)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="CURRENT_TIMESTAMP" name="DATE_AND_TIME" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="4" author="gomicollection">
+        <createTable tableName="EMPLOYEE">
+            <column name="ID" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="PK_EMPLOYEE"/>
+            </column>
+            <column name="FIRST_NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="MIDDLE_NAME" type="VARCHAR(255)"/>
+            <column name="LAST_NAME" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="AGE" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ADDRESS" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CONTACT_NUMBER" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EMAIL" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ACTIVE" type="BOOLEAN"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="5" author="gomicollection">
+        <createIndex indexName="IDX_DEVICE_LOCATION_LOGS_DEVICE" tableName="DEVICE_LOCATION_LOGS">
+            <column name="DEVICE_ID"/>
+        </createIndex>
+
+        <addForeignKeyConstraint baseColumnNames="DEVICE_ID" baseTableName="DEVICE_LOCATION_LOGS"
+                                 constraintName="FK_DEVICE_LOCATION_LOGS_ON_DEVICE" onDelete="CASCADE"
+                                 referencedColumnNames="ID" referencedTableName="DEVICE"/>
+    </changeSet>
+    <changeSet id="6" author="gomicollection">
+        <addForeignKeyConstraint baseColumnNames="DEVICE_ID" baseTableName="DEVICE_EMPLOYEE_LINK"
+                                 constraintName="FK_DEVEMP_ON_DEVICE" referencedColumnNames="ID"
+                                 referencedTableName="DEVICE"/>
+    </changeSet>
+    <changeSet id="7" author="gomicollection">
+        <addForeignKeyConstraint baseColumnNames="EMPLOYEE_ID" baseTableName="DEVICE_EMPLOYEE_LINK"
+                                 constraintName="FK_DEVEMP_ON_EMPLOYEE" referencedColumnNames="ID"
+                                 referencedTableName="EMPLOYEE"/>
+    </changeSet>
+</databaseChangeLog>
