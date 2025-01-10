@@ -3,6 +3,8 @@
 
     <menu id="application" title="msg://com.company.gomicollection/menu.application.title" opened="true">
         <item view="User.list" title="msg://com.company.gomicollection.view.user/UserListView.title"/>
+        <item view="DeviceLocationLogs.list2"
+              title="msg://com.company.gomicollection.view.devicelocationlogs/deviceLocationLogsListView2.title"/>
     </menu>
 
 </menu-config>

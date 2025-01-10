@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      xmlns:c="http://jmix.io/schema/flowui/jpql-condition"
+      title="msg://deviceLocationLogsListView2.title"
+      focusComponent="deviceLocationLogsesDataGrid">
+    <data>
+        <collection id="deviceLocationLogsesDc"
+                    class="com.company.gomicollection.entity.DeviceLocationLogs">
+            <fetchPlan extends="_base"/>
+            <loader id="deviceLocationLogsesDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from DeviceLocationLogs e]]>
+                </query>
+            </loader>
+        </collection>
+        <instance id="deviceLocationLogsDc"
+                  class="com.company.gomicollection.entity.DeviceLocationLogs">
+            <fetchPlan extends="_base">
+                <property name="device" fetchPlan="_base">
+                    <property name="employee" fetchPlan="_base"/>
+                </property>
+            </fetchPlan>
+            <loader id="deviceLocationLogsDl"/>
+        </instance>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+        <urlQueryParameters>
+            <genericFilter component="genericFilter"/>
+            <pagination component="pagination"/>
+        </urlQueryParameters>
+    </facets>
+    <actions>
+        <action id="selectAction" type="lookup_select"/>
+        <action id="discardAction" type="lookup_discard"/>
+    </actions>
+    <layout padding="false">
+        <formLayout id="layoutWrapper" classNames="master-detail-layout" height="100%">
+            <vbox id="listLayout" height="100%">
+                <genericFilter id="genericFilter"
+                               dataLoader="deviceLocationLogsesDl">
+                    <properties include=".*"/>
+                </genericFilter>
+                <hbox id="buttonsPanel" classNames="buttons-panel">
+                    <button id="createButton" action="deviceLocationLogsesDataGrid.create"/>
+                    <button id="editButton" action="deviceLocationLogsesDataGrid.edit"/>
+                    <button id="removeButton" action="deviceLocationLogsesDataGrid.remove"/>
+                    <simplePagination id="pagination" dataLoader="deviceLocationLogsesDl"/>
+                </hbox>
+                <dataGrid id="deviceLocationLogsesDataGrid"
+                          width="100%"
+                          minHeight="20em"
+                          dataContainer="deviceLocationLogsesDc"
+                          columnReorderingAllowed="true">
+                    <actions>
+                        <action id="create" type="list_create"/>
+                        <action id="edit" type="list_edit"/>
+                        <action id="remove" type="list_remove"/>
+                    </actions>
+                    <columns resizable="true">
+                        <column property="latitude"/>
+                        <column property="longitude"/>
+                        <column property="date_and_time"/>
+                    </columns>
+                </dataGrid>
+                <hbox id="lookupActions" visible="false">
+                    <button id="selectButton" action="selectAction"/>
+                    <button id="discardButton" action="discardAction"/>
+                </hbox>
+            </vbox>
+            <vbox id="detailsLayout" height="100%">
+                <formLayout id="form" dataContainer="deviceLocationLogsDc">
+                    <responsiveSteps>
+                        <responsiveStep minWidth="0" columns="1"/>
+                        <responsiveStep minWidth="40em" columns="2"/>
+                    </responsiveSteps>
+                    <entityPicker id="deviceField" property="device">
+                        <actions>
+                            <action id="entityLookup" type="entity_lookup"/>
+                            <action id="entityClear" type="entity_clear"/>
+                        </actions>
+                    </entityPicker>
+                    <textField id="latitudeField" property="latitude" />
+                    <textField id="longitudeField" property="longitude" />
+                    <dateTimePicker id="date_and_timeField" property="date_and_time"/>
+                </formLayout>
+                <hbox id="detailActions">
+                    <button id="saveButton" text="msg:///actions.Save" icon="CHECK" themeNames="primary"/>
+                    <button id="cancelButton" text="msg:///actions.Cancel" icon="BAN"/>
+                </hbox>
+            </vbox>
+        </formLayout>
+    </layout>
+</view>
