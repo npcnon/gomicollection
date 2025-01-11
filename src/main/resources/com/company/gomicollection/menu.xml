@@ -5,6 +5,7 @@
         <item view="User.list" title="msg://com.company.gomicollection.view.user/UserListView.title"/>
         <item view="DeviceLocationLogs.list2"
               title="msg://com.company.gomicollection.view.devicelocationlogs/deviceLocationLogsListView2.title"/>
+        <item view="Mapview" title="msg://com.company.gomicollection.view.map/mapview.title"/>
     </menu>
 
 </menu-config>
