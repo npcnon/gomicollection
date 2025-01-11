@@ -29,6 +29,19 @@ public class Device {
     @Column(name = "DEVICE_NAME", nullable = false)
     @NotNull
     private String device_name;
+    @JoinTable(name = "DEVICE_ROUTE_LINK",
+            joinColumns = @JoinColumn(name = "DEVICE_ID"),
+            inverseJoinColumns = @JoinColumn(name = "ROUTE_ID"))
+    @ManyToMany
+    private List<Route> routes;
+
+    public List<Route> getRoutes() {
+        return routes;
+    }
+
+    public void setRoutes(List<Route> routes) {
+        this.routes = routes;
+    }
 
     public void setEmployee(List<Employee> employee) {
         this.employee = employee;
