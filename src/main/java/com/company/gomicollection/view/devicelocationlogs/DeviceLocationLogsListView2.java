@@ -84,7 +84,6 @@ public class DeviceLocationLogsListView2 extends StandardListView<DeviceLocation
                         "%.6f"
                 ));
 
-        // Configure the number fields
 
 
     }
