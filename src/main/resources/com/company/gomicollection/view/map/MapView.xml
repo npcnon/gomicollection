@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <view xmlns="http://jmix.io/schema/flowui/view"
       title="msg://mapview.title">
-    <layout />
+    <layout margin="true" spacing="true">
+        <!-- The map will be added programmatically in the Java class -->
+    </layout>
 </view>

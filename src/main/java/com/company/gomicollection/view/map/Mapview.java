@@ -1,8 +1,11 @@
 package com.company.gomicollection.view.map;
 
 import com.company.gomicollection.view.main.MainView;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.Tag;
+import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.dependency.JsModule;
+import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
 import io.jmix.flowui.view.StandardView;
@@ -15,17 +18,46 @@ import io.jmix.flowui.view.ViewDescriptor;
 public class Mapview extends StandardView {
 
     public Mapview() {
-        // Create a Vaadin layout
-        VerticalLayout verticalLayout = new VerticalLayout();
+        // Create main layout
+        VerticalLayout mainLayout = new VerticalLayout();
+        mainLayout.setSizeFull();
 
-        // Create a Vaadin button with a click listener
-        Button vaadinButton = new Button("Click Me!",
-                event -> Notification.show("Hello from Vaadin!"));
+        // Add the map component
+        LeafletMap map = new LeafletMap();
+        map.setHeight("600px");
+        map.setWidth("100%");
 
-        // Add the button to the Vaadin layout
-        verticalLayout.add(vaadinButton);
+        mainLayout.add(map);
+        getContent().add(mainLayout);
+    }
 
-        // Add the Vaadin layout to the view's content
-        getContent().add(verticalLayout);
+    @Tag("leaflet-map")
+    @NpmPackage(value = "leaflet", version = "1.9.4")
+    @JsModule("./src/leaflet-map.js")
+    @CssImport("leaflet/dist/leaflet.css")
+    public static class LeafletMap extends Component {
+        public LeafletMap() {
+            // Initialize with default center coordinates
+            setCenter(51.505, -0.09);
+            setZoom(13);
+            getElement().getStyle().set("display", "block");
+        }
+
+        // Add these methods for sizing
+        public void setHeight(String height) {
+            getElement().getStyle().set("height", height);
+        }
+
+        public void setWidth(String width) {
+            getElement().getStyle().set("width", width);
+        }
+
+        public void setCenter(double lat, double lon) {
+            getElement().callJsFunction("setCenter", lat, lon);
+        }
+
+        public void setZoom(int zoom) {
+            getElement().callJsFunction("setZoom", zoom);
+        }
     }
 }
