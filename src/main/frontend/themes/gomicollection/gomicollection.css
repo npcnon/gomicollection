@@ -1,1 +1,6 @@
 /* Define your styles here */
+.route-creation-overlay {
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
