@@ -20,6 +20,9 @@ public class Coordinates {
     @Column(name = "ID", nullable = false)
     @Id
     private UUID id;
+    @Column(name = "POSITION_", nullable = false)
+    @NotNull
+    private String position;
     @OnDeleteInverse(DeletePolicy.CASCADE)
     @JoinColumn(name = "ROUTE_ID", nullable = false)
     @NotNull
@@ -31,6 +34,14 @@ public class Coordinates {
     @Column(name = "LONGITUDE", nullable = false, precision = 9, scale = 6)
     @NotNull
     private BigDecimal longitude;
+
+    public CoordinatePosition getPosition() {
+        return position == null ? null : CoordinatePosition.fromId(position);
+    }
+
+    public void setPosition(CoordinatePosition position) {
+        this.position = position == null ? null : position.getId();
+    }
 
     public BigDecimal getLongitude() {
         return longitude;

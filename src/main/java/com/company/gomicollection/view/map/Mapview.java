@@ -1,5 +1,6 @@
 package com.company.gomicollection.view.map;
 
+import com.company.gomicollection.entity.CoordinatePosition;
 import com.company.gomicollection.view.main.MainView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Tag;
@@ -92,6 +93,14 @@ public class Mapview extends StandardView {
             double lng = detail.getNumber("lng");
 
             Coordinates coordinate = dataManager.create(Coordinates.class);
+
+            if (coordinatesList.isEmpty())
+            {
+                coordinate.setPosition(CoordinatePosition.START);
+            }
+            else{
+                coordinate.setPosition(CoordinatePosition.NORMAL);
+            }
             coordinate.setLatitude(BigDecimal.valueOf(lat));
             coordinate.setLongitude(BigDecimal.valueOf(lng));
             coordinate.setRoute(currentRoute);
@@ -173,15 +182,26 @@ public class Mapview extends StandardView {
 
     private void finishRoute() {
         if (currentRoute != null && !coordinatesList.isEmpty()) {
+            // Save the route
             currentRoute = dataManager.save(currentRoute);
 
-            for (Coordinates coordinate : coordinatesList) {
+            // Set the last coordinate's position to END
+            Coordinates lastCoordinate = coordinatesList.get(coordinatesList.size() - 1);
+            lastCoordinate.setPosition(CoordinatePosition.END);
+            dataManager.save(lastCoordinate); // Save the updated coordinate
+
+            // Save all other coordinates
+            for (int i = 0; i < coordinatesList.size() - 1; i++) {
+                Coordinates coordinate = coordinatesList.get(i);
                 coordinate.setRoute(currentRoute);
                 dataManager.save(coordinate);
             }
 
+            // Stop route creation and clear data
             map.getElement().callJsFunction("stopRouteCreation");
             map.getElement().callJsFunction("clearRoute");
+
+            // Reset route and UI elements
             currentRoute = null;
             coordinatesList.clear();
             startRouteButton.setEnabled(true);
