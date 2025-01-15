@@ -20,16 +20,31 @@ import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import io.jmix.core.DataManager;
 import io.jmix.flowui.view.StandardView;
+import io.jmix.flowui.view.Subscribe;
 import io.jmix.flowui.view.ViewController;
 import io.jmix.flowui.view.ViewDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.company.gomicollection.entity.Coordinates;
 import com.vaadin.flow.dom.DomEvent;
 import elemental.json.JsonObject;
+import com.vaadin.flow.component.combobox.ComboBox;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import io.jmix.flowui.view.View;
+import io.jmix.core.common.event.Subscription;
+import com.vaadin.flow.component.AttachEvent;
+import io.jmix.flowui.view.Subscribe;
+import jakarta.annotation.PostConstruct;
+import elemental.json.Json;
+import elemental.json.JsonArray;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 
 @Route(value = "mapview", layout = MainView.class)
 @ViewController("Mapview")
@@ -45,30 +60,50 @@ public class Mapview extends StandardView {
     private com.company.gomicollection.entity.Route currentRoute;
     private Button startRouteButton;
     private Button finishRouteButton;
+    private ComboBox<com.company.gomicollection.entity.Route> routeComboBox;
 
-    public Mapview() {
+    @PostConstruct
+    public void init() {
         // Create main layout
         VerticalLayout mainLayout = new VerticalLayout();
         mainLayout.setSizeFull();
 
+        // Create top controls layout
+        HorizontalLayout topControls = new HorizontalLayout();
+        topControls.setWidthFull();
+        topControls.setSpacing(true);
+        topControls.setPadding(true);
+        topControls.getStyle().set("z-index", "9999").set("position", "relative");
+
+        // Create route selector
+        routeComboBox = new ComboBox<>("Select Route");
+        routeComboBox.setPlaceholder("Search routes...");
+        routeComboBox.setItemLabelGenerator(route -> route.getRoute_name());
+        routeComboBox.addValueChangeListener(event -> {
+            if (event.getValue() != null) {
+                displayRoute(event.getValue());
+                startRouteButton.setEnabled(false);
+            } else {
+                clearMap();
+                startRouteButton.setEnabled(true);
+            }
+        });
+        updateRouteComboBox();
+
         // Create button layout
         HorizontalLayout buttonLayout = new HorizontalLayout();
-        buttonLayout.getStyle()
-                .set("z-index", "9999")
-                .set("position", "relative");
         buttonLayout.setSpacing(true);
-        buttonLayout.setPadding(true);
 
         startRouteButton = new Button("Start New Route", e -> startNewRoute());
         finishRouteButton = new Button("Finish Route", e -> finishRoute());
-        finishRouteButton.getStyle().set("z-index", "9999");
         finishRouteButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-
-        // Initially hide finish button
         finishRouteButton.setVisible(false);
 
-        // Add buttons to buttonLayout - THIS WAS MISSING
         buttonLayout.add(startRouteButton, finishRouteButton);
+
+        // Add components to top controls
+        topControls.add(routeComboBox, buttonLayout);
+        topControls.setFlexGrow(1, routeComboBox);
 
         // Add the map component
         map = new LeafletMap();
@@ -80,10 +115,73 @@ public class Mapview extends StandardView {
             getUI().ifPresent(ui -> ui.access(() -> handlePointAdded(event)));
         }).addEventData("event.detail");
 
-        mainLayout.add(buttonLayout, map);
-        mainLayout.getStyle().set("position", "relative");
-        mainLayout.getStyle().set("z-index", "1");
+        mainLayout.add(topControls, map);
+        mainLayout.getStyle().set("position", "relative").set("z-index", "1");
         getContent().add(mainLayout);
+    }
+    private void updateRouteComboBox() {
+        List<com.company.gomicollection.entity.Route> routes = dataManager.load(com.company.gomicollection.entity.Route.class)
+                .all()
+                .list();
+        routeComboBox.setItems(routes);
+    }
+    private void displayRoute(com.company.gomicollection.entity.Route route) {
+        clearMap();
+        List<Coordinates> coordinates = dataManager.load(Coordinates.class)
+                .query("select c from Coordinates c where c.route = :route order by c.id")
+                .parameter("route", route)
+                .list();
+
+        // Create a list to hold coordinate arrays
+        List<List<Double>> coordArrays = new ArrayList<>();
+
+        for (Coordinates coord : coordinates) {
+            List<Double> point = Arrays.asList(
+                    coord.getLatitude().doubleValue(),
+                    coord.getLongitude().doubleValue(),
+                    (double) getPositionType(coord.getPosition())
+            );
+            coordArrays.add(point);
+        }
+
+        // Convert to JsonArray for proper serialization
+        JsonArray jsonArray = Json.createArray();
+        for (int i = 0; i < coordArrays.size(); i++) {
+            JsonArray point = Json.createArray();
+            List<Double> coords = coordArrays.get(i);
+            point.set(0, coords.get(0));
+            point.set(1, coords.get(1));
+            point.set(2, coords.get(2));
+            jsonArray.set(i, point);
+        }
+
+        // Call the JavaScript function with the JsonArray
+        map.getElement().callJsFunction("displayExistingRoute", jsonArray);
+    }
+
+    private int getPositionType(CoordinatePosition position) {
+        if (position == CoordinatePosition.START) return 0;
+        if (position == CoordinatePosition.END) return 2;
+        return 1;
+    }
+
+    private void clearMap() {
+        map.getElement().callJsFunction("clearRoute");
+        currentRoute = null;
+        coordinatesList.clear();
+    }
+
+    @Override
+    protected void onAttach(AttachEvent attachEvent) {
+        super.onAttach(attachEvent);
+        updateRouteComboBox(); // Refresh routes list when entering the view
+    }
+
+    private void onRouteFinished() {
+        clearMap();
+        updateRouteComboBox();
+        routeComboBox.setValue(null);
+        startRouteButton.setEnabled(true);
     }
 
     private void handlePointAdded(DomEvent event) {
@@ -206,6 +304,7 @@ public class Mapview extends StandardView {
             coordinatesList.clear();
             startRouteButton.setEnabled(true);
             finishRouteButton.setVisible(false);
+            onRouteFinished();
         }
     }
 

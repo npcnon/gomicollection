@@ -37,6 +37,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     //additional dependencies
     implementation 'org.webjars.bowergithub.leaflet:leaflet:1.9.4'
+    implementation 'com.vaadin:vaadin-core:24.0.0'
+
+
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

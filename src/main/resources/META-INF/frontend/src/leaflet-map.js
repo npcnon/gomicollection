@@ -14,6 +14,54 @@ class LeafletMap extends PolymerElement {
         this._isRouteCreationActive = false;
         this._routeCreationOverlay = null;
     }
+
+    displayExistingRoute(coordinates) {
+        console.log('Received coordinates:', coordinates);
+        this.clearRoute();
+
+        if (!coordinates || coordinates.length === 0) {
+            console.log('No coordinates received');
+            return;
+        }
+
+        // Create markers and polyline
+        coordinates.forEach(coord => {
+            const [lat, lng, type] = coord;
+
+            // Create marker with appropriate icon based on type
+            let icon;
+            if (type === 0) { // START
+                icon = L.divIcon({
+                    html: '<div style="background-color: green; width: 10px; height: 10px; border-radius: 50%;"></div>',
+                    className: 'start-marker'
+                });
+            } else if (type === 2) { // END
+                icon = L.divIcon({
+                    html: '<div style="background-color: red; width: 10px; height: 10px; border-radius: 50%;"></div>',
+                    className: 'end-marker'
+                });
+            } else { // NORMAL
+                icon = L.divIcon({
+                    html: '<div style="background-color: blue; width: 8px; height: 8px; border-radius: 50%;"></div>',
+                    className: 'normal-marker'
+                });
+            }
+
+            const marker = L.marker([lat, lng], { icon }).addTo(this._map);
+            this._markers.push(marker);
+        });
+
+        // Create polyline from all points
+        const points = coordinates.map(coord => [coord[0], coord[1]]);
+        this._polyline = L.polyline(points, { color: 'red' }).addTo(this._map);
+
+        // Fit map bounds to show the entire route
+        if (points.length > 0) {
+            const bounds = L.latLngBounds(points);
+            this._map.fitBounds(bounds, { padding: [50, 50] });
+        }
+    }
+
     connectedCallback() {
         super.connectedCallback();
 
