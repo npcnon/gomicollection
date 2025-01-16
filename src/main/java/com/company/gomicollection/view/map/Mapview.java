@@ -192,32 +192,31 @@ public class Mapview extends StandardView {
 
             Coordinates coordinate = dataManager.create(Coordinates.class);
 
-            if (coordinatesList.isEmpty())
-            {
+            // Set position based on point order
+            if (coordinatesList.isEmpty()) {
                 coordinate.setPosition(CoordinatePosition.START);
-            }
-            else{
+            } else if (coordinatesList.size() >= 2) {
+                // Update previous "normal" point if it exists
+                Coordinates previousCoordinate = coordinatesList.get(coordinatesList.size() - 1);
+                if (previousCoordinate.getPosition() == CoordinatePosition.NORMAL) {
+                    previousCoordinate.setPosition(CoordinatePosition.END);
+                    coordinate.setPosition(CoordinatePosition.END);
+                } else {
+                    coordinate.setPosition(CoordinatePosition.NORMAL);
+                }
+            } else {
                 coordinate.setPosition(CoordinatePosition.NORMAL);
             }
+
             coordinate.setLatitude(BigDecimal.valueOf(lat));
             coordinate.setLongitude(BigDecimal.valueOf(lng));
             coordinate.setRoute(currentRoute);
 
             coordinatesList.add(coordinate);
 
-            System.out.println("Points count: " + coordinatesList.size()); // Debug log
-
-            // Show finish button after 2 points - modified approach
+            // Show finish button after 2 points
             if (coordinatesList.size() >= 2) {
                 finishRouteButton.setVisible(true);
-
-                // Force button layout refresh
-                finishRouteButton.getParent().ifPresent(parent -> {
-                    if (parent instanceof HorizontalLayout) {
-                        ((HorizontalLayout) parent).removeAll();
-                        ((HorizontalLayout) parent).add(startRouteButton, finishRouteButton);
-                    }
-                });
             }
         }
     }

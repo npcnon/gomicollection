@@ -89,7 +89,8 @@ class LeafletMap extends PolymerElement {
                 if (this._polyline) {
                     this._polyline.setLatLngs(points);
                 } else {
-                    this._polyline = L.polyline(points, {color: 'red'}).addTo(this._map);
+                    // In LeafletMap.js, change the polyline color from red to something like blue
+                    this._polyline = L.polyline(points, { color: 'blue', weight: 3 }).addTo(this._map);
                 }
 
                 // Update start/end markers
