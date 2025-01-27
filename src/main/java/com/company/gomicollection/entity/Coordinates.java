@@ -34,6 +34,18 @@ public class Coordinates {
     @Column(name = "LONGITUDE", nullable = false, precision = 9, scale = 6)
     @NotNull
     private BigDecimal longitude;
+    @Column(name = "SEQUENCE_NUMBER")
+    private Integer sequenceNumber;  // Add this field
+
+    public Integer getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public void setSequenceNumber(Integer sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
+    }
+
+
 
     public CoordinatePosition getPosition() {
         return position == null ? null : CoordinatePosition.fromId(position);

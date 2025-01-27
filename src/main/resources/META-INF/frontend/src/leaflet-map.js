@@ -37,7 +37,7 @@ class LeafletMap extends PolymerElement {
                 });
             } else if (type === 2) { // END
                 icon = L.divIcon({
-                    html: '<div style="background-color: red; width: 10px; height: 10px; border-radius: 50%;"></div>',
+                    html: '<div style="background-color: #eeff00; width: 10px; height: 10px; border-radius: 50%;"></div>',
                     className: 'end-marker'
                 });
             } else { // NORMAL

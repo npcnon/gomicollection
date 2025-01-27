@@ -128,7 +128,7 @@ public class Mapview extends StandardView {
     private void displayRoute(com.company.gomicollection.entity.Route route) {
         clearMap();
         List<Coordinates> coordinates = dataManager.load(Coordinates.class)
-                .query("select c from Coordinates c where c.route = :route order by c.id")
+                .query("select c from Coordinates c where c.route = :route order by c.sequenceNumber")  // Changed this line
                 .parameter("route", route)
                 .list();
 
@@ -192,11 +192,13 @@ public class Mapview extends StandardView {
 
             Coordinates coordinate = dataManager.create(Coordinates.class);
 
+            // Set sequence number based on current list size
+            coordinate.setSequenceNumber(coordinatesList.size());  // Add this line
+
             // Set position based on point order
             if (coordinatesList.isEmpty()) {
                 coordinate.setPosition(CoordinatePosition.START);
             } else if (coordinatesList.size() >= 2) {
-                // Update previous "normal" point if it exists
                 Coordinates previousCoordinate = coordinatesList.get(coordinatesList.size() - 1);
                 if (previousCoordinate.getPosition() == CoordinatePosition.NORMAL) {
                     previousCoordinate.setPosition(CoordinatePosition.END);
@@ -214,7 +216,6 @@ public class Mapview extends StandardView {
 
             coordinatesList.add(coordinate);
 
-            // Show finish button after 2 points
             if (coordinatesList.size() >= 2) {
                 finishRouteButton.setVisible(true);
             }
